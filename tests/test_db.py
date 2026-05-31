@@ -28,7 +28,7 @@ def setup_test_db() -> sqlite3.Connection:
     return conn
 
 
-def test_get_movies_for_release_check_selects_unchecked_and_stale_negatives():
+def test_get_movies_for_release_check():
     conn = setup_test_db()
     cursor = conn.cursor()
 
@@ -62,8 +62,7 @@ def test_get_movies_for_release_check_selects_unchecked_and_stale_negatives():
 
     rows = get_movies_for_release_check(conn)
 
-    assert (101, "Unchecked Movie") in rows
-    assert (102, "Stale Negative Movie") in rows
-    assert (103, "Fresh Negative Movie") not in rows
-    assert (104, "Already Found 4K Movie") not in rows
-    assert (None, "No Radarr ID Movie") not in rows
+    assert set(rows) == {
+        (101, "Unchecked Movie"),
+        (102, "Stale Negative Movie"),
+    }
