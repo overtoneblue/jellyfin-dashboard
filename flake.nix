@@ -70,6 +70,7 @@
               streamlit
               sqlalchemy
               pytest
+              psycopg
             ]);
           };
         }

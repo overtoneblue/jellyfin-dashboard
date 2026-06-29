@@ -12,7 +12,7 @@ df = conn.query(
     """
     SELECT tmdb_id, name, year, height, width, four_k_available, last_checked
     FROM movies
-    WHERE four_k_available = 1
+    WHERE four_k_available = True
     ORDER BY name
 """
 )

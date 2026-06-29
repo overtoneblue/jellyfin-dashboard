@@ -2,6 +2,7 @@ import logging
 import os
 import sqlite3
 from typing import Any
+import psycopg
 import requests
 
 from .radarr import contact_radarr
@@ -54,7 +55,7 @@ def parse_streams(movie: dict) -> tuple[int, int] | tuple[None, None]:
     return (res_height, res_width)
 
 
-def organize_movies(data: dict, conn: sqlite3.Connection):
+def organize_movies(data: dict, conn: psycopg.Connection):
     for movie in data["Items"]:
         movie_key = movie["ProviderIds"]["Tmdb"]
         res_height, res_width = parse_streams(movie)
@@ -67,7 +68,7 @@ def organize_movies(data: dict, conn: sqlite3.Connection):
         if res_height <= 1080 and res_width <= 1920:
             cursor = conn.cursor()
             cursor.execute(
-                "SELECT tmdb_id, radarr_movie_id FROM movies WHERE tmdb_id = ?",
+                "SELECT tmdb_id, radarr_movie_id FROM movies WHERE tmdb_id = %s",
                 (int(movie_key),),
             )
             row = cursor.fetchone()
@@ -76,7 +77,7 @@ def organize_movies(data: dict, conn: sqlite3.Connection):
                 cursor.execute(
                     """
                     INSERT INTO movies (tmdb_id, radarr_movie_id, year, name, height, width)
-                    VALUES (?,?, ?, ?, ?, ?)
+                    VALUES (%s, %s, %s, %s, %s, %s)
                 """,
                     (
                         int(movie_key),
@@ -93,7 +94,7 @@ def organize_movies(data: dict, conn: sqlite3.Connection):
             elif row[0] and not row[1]:
                 radarr_movie_id = contact_radarr(int(movie_key))
                 cursor.execute(
-                    "UPDATE movies SET radarr_movie_id = ? WHERE tmdb_id = ?",
+                    "UPDATE movies SET radarr_movie_id = %s WHERE tmdb_id = %s",
                     (radarr_movie_id, int(movie_key)),
                 )
                 logging.info(

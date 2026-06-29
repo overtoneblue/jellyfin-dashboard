@@ -21,12 +21,12 @@ def main():
     start = perf_counter()
     organize_movies(data, conn)
     logging.info("organize_movies() took %.2fs", perf_counter() - start)
-
-    start = perf_counter()
-    summary = process_release_checks(conn)
-    logging.info("process_release_checks() took %.2fs", perf_counter() - start)
-    formatted_summary = format_release_summary(summary)
-    logging.info(formatted_summary)
+    #
+    # start = perf_counter()
+    # summary = process_release_checks(conn)
+    # logging.info("process_release_checks() took %.2fs", perf_counter() - start)
+    # formatted_summary = format_release_summary(summary)
+    # logging.info(formatted_summary)
 
 
 if __name__ == "__main__":
